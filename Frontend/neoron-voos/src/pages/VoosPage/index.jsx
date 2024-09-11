@@ -1,6 +1,6 @@
 // src/pages/VoosPage/VoosPage.js
 import React, { useEffect, useState } from "react";
-import axiosInstance from '../../config/axiosConfig'
+import axiosInstance from '../../config/axiosConfig';
 import VoosTable from "../../components/VoosTable/VoosTable";
 import { Container, Title } from "./styles";
 
@@ -20,10 +20,19 @@ function VoosPage() {
     fetchVoos();
   }, []);
 
+  const handleDelete = async (id) => {
+    try {
+      await axiosInstance.delete(`/voos/${id}`);
+      setVoos((prevVoos) => prevVoos.filter((voo) => voo.codigoVoo !== id));
+    } catch (error) {
+      console.error("Erro ao excluir voo:", error);
+    }
+  };
+
   return (
     <Container>
       <Title>Lista de Voos</Title>
-      <VoosTable voos={voos} />
+      <VoosTable voos={voos} onDelete={handleDelete} />
     </Container>
   );
 }

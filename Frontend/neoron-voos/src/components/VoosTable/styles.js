@@ -20,3 +20,13 @@ export const TableData = styled.td`
     text-align: left;
     border: 1px solid green;
 `
+
+export const Icon = styled.span`
+    margin: 0 5px;
+    cursor: pointer;
+    color: black;
+
+    &:hover {
+        color: red;
+    }
+`
