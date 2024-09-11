@@ -17,29 +17,34 @@ public class Voos {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID codigoVoo;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "origem_id")
 	private Aeroportos origem;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "destino_id")
 	private Aeroportos destino;
-	
-	private LocalDate data;
-	private LocalDateTime hora;
-	
-	
+
+	private LocalDate dataPartida;
+	private LocalDate dataChegada;
+	private LocalDateTime horaPartida;
+	private LocalDateTime horaChegada;
+
 	public Voos() {
-		
+
 	}
 
-	public Voos(UUID codigoVoo, Aeroportos origem, Aeroportos destino, LocalDate data, LocalDateTime hora) {
+	public Voos(UUID codigoVoo, Aeroportos origem, Aeroportos destino, LocalDate dataPartida, LocalDate dataChegada,
+			LocalDateTime horaPartida, LocalDateTime horaChegada) {
+		super();
 		this.codigoVoo = codigoVoo;
 		this.origem = origem;
 		this.destino = destino;
-		this.data = data;
-		this.hora = hora;
+		this.dataPartida = dataPartida;
+		this.dataChegada = dataChegada;
+		this.horaPartida = horaPartida;
+		this.horaChegada = horaChegada;
 	}
 
 	public UUID getCodigoVoo() {
@@ -66,20 +71,36 @@ public class Voos {
 		this.destino = destino;
 	}
 
-	public LocalDate getData() {
-		return data;
+	public LocalDate getDataPartida() {
+		return dataPartida;
 	}
 
-	public void setData(LocalDate data) {
-		this.data = data;
+	public void setDataPartida(LocalDate dataPartida) {
+		this.dataPartida = dataPartida;
 	}
 
-	public LocalDateTime getHora() {
-		return hora;
+	public LocalDate getDataChegada() {
+		return dataChegada;
 	}
 
-	public void setHora(LocalDateTime hora) {
-		this.hora = hora;
+	public void setDataChegada(LocalDate dataChegada) {
+		this.dataChegada = dataChegada;
 	}
-	
+
+	public LocalDateTime getHoraPartida() {
+		return horaPartida;
+	}
+
+	public void setHoraPartida(LocalDateTime horaPartida) {
+		this.horaPartida = horaPartida;
+	}
+
+	public LocalDateTime getHoraChegada() {
+		return horaChegada;
+	}
+
+	public void setHoraChegada(LocalDateTime horaChegada) {
+		this.horaChegada = horaChegada;
+	}
+
 }

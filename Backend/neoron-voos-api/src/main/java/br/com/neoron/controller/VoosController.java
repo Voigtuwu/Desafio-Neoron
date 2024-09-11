@@ -1,0 +1,81 @@
+package br.com.neoron.controller;
+
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import br.com.neoron.entity.Voos;
+import br.com.neoron.service.VooService;
+
+@RestController
+@RequestMapping("/api/voos")
+public class VoosController {
+
+    @Autowired
+    private VooService voosService;
+
+    @PostMapping
+    public ResponseEntity<Voos> criarVoo(@RequestBody Voos voo) {
+        try {
+            Voos vooCriado = voosService.criarVoo(voo);
+            return new ResponseEntity<>(vooCriado, HttpStatus.CREATED);
+        } catch (Exception e) {
+            // Trata a exceção e retorna um erro adequado
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Voos> listarPorId(@PathVariable UUID id) {
+        Voos voo = voosService.listarPorId(id);
+        if (voo != null) {
+            return new ResponseEntity<>(voo, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Voos>> listarTodos() {
+        List<Voos> voos = voosService.listarTodos();
+        return new ResponseEntity<>(voos, HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Voos> atualizarVoo(@PathVariable UUID id, @RequestBody Voos vooAtualizado) {
+        try {
+            Voos voo = voosService.atualizarVoo(id, vooAtualizado);
+            if (voo != null) {
+                return new ResponseEntity<>(voo, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            // Trata a exceção e retorna um erro adequado
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarVoo(@PathVariable UUID id) {
+        try {
+            voosService.deletarVoo(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            // Trata a exceção e retorna um erro adequado
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+	
+}
