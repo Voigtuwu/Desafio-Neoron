@@ -13,7 +13,7 @@ function App() {
         <Route path="/" element={<VoosPage />} />
         <Route path="/voos" element={<VoosPage />} />
         <Route path="/cadastrar" element={<CadastrarVooPage />} />
-        <Route path="/atualizar" element={<AtualizarVooPage />} />
+        <Route path="/atualizar/:id" element={<AtualizarVooPage />} />
       </Routes>
     </Router>
   );

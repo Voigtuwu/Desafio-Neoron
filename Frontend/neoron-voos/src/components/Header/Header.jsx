@@ -13,7 +13,6 @@ function Header() {
       <Nav>
         <NavLink href="/voos">Voos</NavLink>
         <NavLink href="/cadastrar">Cadastrar Voo</NavLink>
-        <NavLink href="/atualizar">Atualizar Voo</NavLink>
       </Nav>
     </HeaderContainer>
   );

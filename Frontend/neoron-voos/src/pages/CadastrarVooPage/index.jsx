@@ -80,8 +80,25 @@ function CadastrarVooPage() {
     } catch (error) {
       console.error("Erro ao cadastrar voo:", error);
       setMessage("");
-      setError("Erro ao cadastrar voo. Tente novamente.");
+      setError(parseErrorMessage(error.response?.data));
     }
+  };
+
+  const parseErrorMessage = (errorData) => {
+    if (errorData.message) {
+      return errorData.message;
+    }
+
+    if (errorData.errors) {
+      if (errorData.errors.minDifference) {
+        return "Cada voo deve ter no mínimo 30 minutos de diferença do outro.";
+      }
+      if (errorData.errors.duplicateDestination) {
+        return "Não podem haver 2 voos para o mesmo destino no mesmo dia.";
+      }
+    }
+
+    return "Erro desconhecido. Tente novamente.";
   };
 
   return (
