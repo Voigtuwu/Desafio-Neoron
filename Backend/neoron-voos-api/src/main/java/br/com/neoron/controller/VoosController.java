@@ -32,11 +32,11 @@ public class VoosController {
 		return new ResponseEntity<>(vooCriado, HttpStatus.CREATED);
 	}
 
-//	@PutMapping("/{id}")
-//	public ResponseEntity<VooResponseDTO> atualizarVoo(@PathVariable UUID id, @RequestBody Voos v) {
-//		VooResponseDTO vooAtualizado = voosService.atualizarVoo(id, v);
-//		return new ResponseEntity<>(vooAtualizado, HttpStatus.OK);
-//	}
+	@PutMapping("/{id}")
+	public ResponseEntity<VooResponseDTO> atualizarVoo(@PathVariable UUID id, @RequestBody Voos v) {
+	    VooResponseDTO vooAtualizado = voosService.atualizarVoo(id, v);
+	    return new ResponseEntity<>(vooAtualizado, HttpStatus.OK);
+	}
 
     @GetMapping
     public ResponseEntity<List<VooResponseDTO>> listarTodos() {
