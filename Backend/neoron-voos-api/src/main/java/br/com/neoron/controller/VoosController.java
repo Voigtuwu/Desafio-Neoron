@@ -24,16 +24,17 @@ public class VoosController {
 
     @Autowired
     private VooService voosService;
-
+    
     @PostMapping
-    public ResponseEntity<Voos> criarVoo(@RequestBody Voos voo) {
-        try {
-            Voos vooCriado = voosService.criarVoo(voo);
-            return new ResponseEntity<>(vooCriado, HttpStatus.CREATED);
-        } catch (Exception e) {
-            // Trata a exceção e retorna um erro adequado
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<Voos> criarVoo(@RequestBody Voos v) {
+        Voos vooCriado = voosService.criarVoo(v);
+        return new ResponseEntity<>(vooCriado, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Voos> atualizarVoo(@PathVariable UUID id, @RequestBody Voos v) {
+        Voos voo = voosService.atualizarVoo(id, v);
+        return new ResponseEntity<>(voo, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -50,21 +51,6 @@ public class VoosController {
     public ResponseEntity<List<Voos>> listarTodos() {
         List<Voos> voos = voosService.listarTodos();
         return new ResponseEntity<>(voos, HttpStatus.OK);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Voos> atualizarVoo(@PathVariable UUID id, @RequestBody Voos vooAtualizado) {
-        try {
-            Voos voo = voosService.atualizarVoo(id, vooAtualizado);
-            if (voo != null) {
-                return new ResponseEntity<>(voo, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-            }
-        } catch (Exception e) {
-            // Trata a exceção e retorna um erro adequado
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
     }
 
     @DeleteMapping("/{id}")
