@@ -29,40 +29,52 @@ public class VoosRepositoryCustomImpl implements VoosRepositoryCustom {
         // Condição para a mesma data
         Predicate dataIgual = cb.equal(voo.get("dataPartida"), dataPartida);
 
-        // Condições para sobreposição de horários com mesma origem e destino
+        // Condição para sobreposição de horários quando a origem e destino são os mesmos
         Predicate partidaOverlapMesmoOrigemDestino = cb.and(
+            cb.equal(voo.get("origem"), origem),
+            cb.equal(voo.get("destino"), destino),
             cb.lessThanOrEqualTo(voo.get("horaPartida"), endTime.plusMinutes(30)),
             cb.greaterThanOrEqualTo(voo.get("horaChegada"), startTime.minusMinutes(30))
         );
 
-        // Condições para sobreposição de horários com destinos iguais e origens diferentes (verifica só a hora de chegada)
-        Predicate chegadaOverlapDestinoDiferente = cb.and(
-            cb.lessThanOrEqualTo(voo.get("horaChegada"), endTime.plusMinutes(30)),
-            cb.greaterThanOrEqualTo(voo.get("horaChegada"), startTime.minusMinutes(30))
+        // Condição para sobreposição de chegada quando o destino é o mesmo (origens diferentes)
+        Predicate chegadaOverlapMesmoDestinoOrigemDiferente = cb.and(
+        	    cb.equal(voo.get("destino"), destino), // mesmo destino
+        	    cb.notEqual(voo.get("origem"), origem), // origem diferente
+        	    cb.and(
+        	        cb.lessThanOrEqualTo(voo.get("horaChegada"), endTime.plusMinutes(30)), // chegada deve ser antes do final do intervalo
+        	        cb.greaterThanOrEqualTo(voo.get("horaChegada"), startTime.minusMinutes(30))  // chegada deve ser depois do início do intervalo
+        	    )
+        	);
+
+        // Condição para verificar se há um conflito entre a chegada de um voo no aeroporto de origem com a partida de outro voo
+        Predicate partidaConflitoChegadaOrigem = cb.and(
+                cb.equal(voo.get("dataPartida"), dataPartida),
+                cb.or(
+                    // Se a origem do novo voo é o destino de um voo existente
+                    cb.and(
+                        cb.equal(voo.get("destino"), origem), // mesmo destino do voo existente
+                        cb.lessThanOrEqualTo(voo.get("horaChegada"), startTime.plusMinutes(30)),
+                        cb.greaterThanOrEqualTo(voo.get("horaChegada"), startTime.minusMinutes(30))
+                    ),
+                    // Se a origem do novo voo é igual à origem do voo existente
+                    cb.and(
+                        cb.equal(voo.get("origem"), origem), // mesma origem
+                        cb.lessThanOrEqualTo(voo.get("horaPartida"), endTime.plusMinutes(30)),
+                        cb.greaterThanOrEqualTo(voo.get("horaPartida"), startTime.minusMinutes(30))
+                    )
+                )
+            );
+
+        // Combinando todas as condições de conflito
+        Predicate conflito = cb.or(
+            partidaOverlapMesmoOrigemDestino, // conflito no mesmo origem e destino
+            chegadaOverlapMesmoDestinoOrigemDiferente, // conflito em origens diferentes e mesmo destino
+            partidaConflitoChegadaOrigem // sobreposição com chegada no aeroporto de origem
         );
 
-        // Condição para voos com mesma origem e destino
-        Predicate conflitoMesmoOrigemDestino = cb.and(
-            cb.equal(voo.get("origem"), origem),
-            cb.equal(voo.get("destino"), destino),
-            partidaOverlapMesmoOrigemDestino
-        );
-
-        // Condição para voos com o mesmo destino, mas origem diferente (apenas verificar hora de chegada)
-        Predicate conflitoDestinoIgualOrigemDiferente = cb.and(
-            cb.equal(voo.get("destino"), destino),
-            cb.notEqual(voo.get("origem"), origem),
-            chegadaOverlapDestinoDiferente
-        );
-
-        // Combinar as condições de conflito
-        Predicate conflito = cb.or(conflitoMesmoOrigemDestino, conflitoDestinoIgualOrigemDiferente);
-
-        cq.select(cb.count(voo))
-            .where(dataIgual, conflito);
+        cq.select(cb.count(voo)).where(dataIgual, conflito);
 
         return entityManager.createQuery(cq).getSingleResult() > 0;
     }
-
-
 }
