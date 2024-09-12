@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.neoron.dto.VooResponseDTO;
 import br.com.neoron.entity.Voos;
 import br.com.neoron.service.VooService;
 
@@ -22,46 +23,42 @@ import br.com.neoron.service.VooService;
 @RequestMapping("/api/voos")
 public class VoosController {
 
-    @Autowired
-    private VooService voosService;
-    
-    @PostMapping
-    public ResponseEntity<Voos> criarVoo(@RequestBody Voos v) {
-        Voos vooCriado = voosService.criarVoo(v);
-        return new ResponseEntity<>(vooCriado, HttpStatus.CREATED);
-    }
+	@Autowired
+	private VooService voosService;
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Voos> atualizarVoo(@PathVariable UUID id, @RequestBody Voos v) {
-        Voos voo = voosService.atualizarVoo(id, v);
-        return new ResponseEntity<>(voo, HttpStatus.OK);
-    }
+	@PostMapping
+	public ResponseEntity<VooResponseDTO> criarVoo(@RequestBody Voos v) {
+		VooResponseDTO vooCriado = voosService.criarVoo(v);
+		return new ResponseEntity<>(vooCriado, HttpStatus.CREATED);
+	}
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Voos> listarPorId(@PathVariable UUID id) {
-        Voos voo = voosService.listarPorId(id);
-        if (voo != null) {
-            return new ResponseEntity<>(voo, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
-    }
+//	@PutMapping("/{id}")
+//	public ResponseEntity<VooResponseDTO> atualizarVoo(@PathVariable UUID id, @RequestBody Voos v) {
+//		VooResponseDTO vooAtualizado = voosService.atualizarVoo(id, v);
+//		return new ResponseEntity<>(vooAtualizado, HttpStatus.OK);
+//	}
 
     @GetMapping
-    public ResponseEntity<List<Voos>> listarTodos() {
-        List<Voos> voos = voosService.listarTodos();
+    public ResponseEntity<List<VooResponseDTO>> listarTodos() {
+        List<VooResponseDTO> voos = voosService.listarTodos();
         return new ResponseEntity<>(voos, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarVoo(@PathVariable UUID id) {
-        try {
-            voosService.deletarVoo(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            // Trata a exceção e retorna um erro adequado
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    @GetMapping("/{id}")
+    public ResponseEntity<VooResponseDTO> listarPorId(@PathVariable UUID id) {
+        VooResponseDTO voo = voosService.listarPorId(id);
+        return new ResponseEntity<>(voo, HttpStatus.OK);
     }
-	
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> deletarVoo(@PathVariable UUID id) {
+		try {
+			voosService.deletarVoo(id);
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		} catch (Exception e) {
+			// Trata a exceção e retorna um erro adequado
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+
 }

@@ -1,11 +1,11 @@
 // src/pages/AtualizarVooPage/AtualizarVooPage.js
 import React, { useState, useEffect } from "react";
-import axiosInstance from '../../config/axiosConfig';
+import axiosInstance from "../../config/axiosConfig";
 import { useNavigate, useParams } from "react-router-dom";
 import { Container, Title, Form, Label, Select, Input, Button } from "./styles";
 
 function AtualizarVooPage() {
-  const { id } = useParams();
+  const { id } = useParams(); // Obtém o ID do voo da URL
   const [origens, setOrigens] = useState([]);
   const [destinos, setDestinos] = useState([]);
   const [formData, setFormData] = useState({
@@ -18,7 +18,7 @@ function AtualizarVooPage() {
   });
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-  
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -39,10 +39,10 @@ function AtualizarVooPage() {
         setFormData({
           origem: vooData.origem.id,
           destino: vooData.destino.id,
-          dataPartida: vooData.dataPartida,
-          horaPartida: vooData.horaPartida,
-          dataChegada: vooData.dataChegada,
-          horaChegada: vooData.horaChegada,
+          dataPartida: vooData.dataPartida.split("T")[0], // Formata a data para o formato 'YYYY-MM-DD'
+          horaPartida: vooData.horaPartida.split("T")[1] || "", // Formata a hora para o formato 'HH:MM'
+          dataChegada: vooData.dataChegada.split("T")[0], // Formata a data para o formato 'YYYY-MM-DD'
+          horaChegada: vooData.horaChegada.split("T")[1] || "", // Formata a hora para o formato 'HH:MM'
         });
       } catch (error) {
         console.error("Erro ao buscar voo:", error);
@@ -61,14 +61,23 @@ function AtualizarVooPage() {
     }));
   };
 
-  const formatLocalDateTime = (date, time) => {
-    if (!date || !time) return "";
-    return `${date}T${time}`;
-  };
-
   const validateForm = () => {
-    const { origem, destino, dataPartida, horaPartida, dataChegada, horaChegada } = formData;
-    if (!origem || !destino || !dataPartida || !horaPartida || !dataChegada || !horaChegada) {
+    const {
+      origem,
+      destino,
+      dataPartida,
+      horaPartida,
+      dataChegada,
+      horaChegada,
+    } = formData;
+    if (
+      !origem ||
+      !destino ||
+      !dataPartida ||
+      !horaPartida ||
+      !dataChegada ||
+      !horaChegada
+    ) {
       return "Todos os campos são obrigatórios.";
     }
     return "";
@@ -76,7 +85,7 @@ function AtualizarVooPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     const validationError = validateForm();
     if (validationError) {
       setError(validationError);
@@ -87,10 +96,16 @@ function AtualizarVooPage() {
       const formDataWithIds = {
         origem: { id: formData.origem },
         destino: { id: formData.destino },
-        dataPartida: formData.dataPartida,
-        horaPartida: formatLocalDateTime(formData.dataPartida, formData.horaPartida),
-        dataChegada: formData.dataChegada,
-        horaChegada: formatLocalDateTime(formData.dataChegada, formData.horaChegada),
+        dataPartida: formData.dataPartida, // LocalDate
+        horaPartida: formatLocalDateTime(
+          formData.dataPartida,
+          formData.horaPartida
+        ), // LocalDateTime
+        dataChegada: formData.dataChegada, // LocalDate
+        horaChegada: formatLocalDateTime(
+          formData.dataChegada,
+          formData.horaChegada
+        ), // LocalDateTime
       };
 
       await axiosInstance.put(`/voos/${id}`, formDataWithIds);
@@ -99,22 +114,17 @@ function AtualizarVooPage() {
       navigate("/voos");
     } catch (error) {
       console.error("Erro ao atualizar voo:", error);
-      if (error.response && error.response.data) {
-        setMessage("");
-        setError(parseErrorMessage(error.response.data));
-      } else {
-        setMessage("");
-        setError("Erro ao atualizar voo. Tente novamente.");
-      }
+      setMessage("");
+      setError(parseErrorMessage(error.response?.data));
     }
   };
 
   const parseErrorMessage = (errorData) => {
-    if (errorData.message) {
+    if (errorData?.message) {
       return errorData.message;
     }
 
-    if (errorData.errors) {
+    if (errorData?.errors) {
       if (errorData.errors.minDifference) {
         return "Cada voo deve ter no mínimo 30 minutos de diferença do outro.";
       }
@@ -124,6 +134,11 @@ function AtualizarVooPage() {
     }
 
     return "Erro desconhecido. Tente novamente.";
+  };
+
+  const formatLocalDateTime = (date, time) => {
+    if (!date || !time) return "";
+    return `${date}T${time}`;
   };
 
   return (
@@ -212,7 +227,7 @@ function AtualizarVooPage() {
         <Button type="submit">Atualizar</Button>
       </Form>
       {message && <p>{message}</p>}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
     </Container>
   );
 }

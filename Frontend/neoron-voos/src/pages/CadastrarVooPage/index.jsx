@@ -41,11 +41,6 @@ function CadastrarVooPage() {
     }));
   };
 
-  const formatLocalDateTime = (date, time) => {
-    if (!date || !time) return "";
-    return `${date}T${time}`;
-  };
-
   const validateForm = () => {
     const { origem, destino, dataPartida, horaPartida, dataChegada, horaChegada } = formData;
     if (!origem || !destino || !dataPartida || !horaPartida || !dataChegada || !horaChegada) {
@@ -54,25 +49,36 @@ function CadastrarVooPage() {
     return "";
   };
 
+  const formatDate = (date) => {
+    if (!date) return "";
+    // Supondo que date está no formato yyyy-MM-dd
+    return date; // Não precisa alterar, pois o formato yyyy-MM-dd é aceito pelo backend
+  };
+  
+  const formatDateTime = (date, time) => {
+    if (!date || !time) return "";
+    return `${date}T${time}:00`; // Formato yyyy-MM-dd'T'HH:mm:ss
+  };
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+  
     const validationError = validateForm();
     if (validationError) {
       setError(validationError);
       return;
     }
-
+  
     try {
       const formDataWithIds = {
         origem: { id: formData.origem },
         destino: { id: formData.destino },
-        dataPartida: formData.dataPartida,
-        horaPartida: formatLocalDateTime(formData.dataPartida, formData.horaPartida),
-        dataChegada: formData.dataChegada,
-        horaChegada: formatLocalDateTime(formData.dataChegada, formData.horaChegada),
+        dataPartida: formatDate(formData.dataPartida), // Formato yyyy-MM-dd
+        horaPartida: formatDateTime(formData.dataPartida, formData.horaPartida), // Formato yyyy-MM-dd'T'HH:mm:ss
+        dataChegada: formatDate(formData.dataChegada), // Formato yyyy-MM-dd
+        horaChegada: formatDateTime(formData.dataChegada, formData.horaChegada), // Formato yyyy-MM-dd'T'HH:mm:ss
       };
-
+  
       await axiosInstance.post("/voos", formDataWithIds);
       setMessage("Voo cadastrado com sucesso!");
       setError("");

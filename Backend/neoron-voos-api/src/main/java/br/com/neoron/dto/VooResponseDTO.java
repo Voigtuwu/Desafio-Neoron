@@ -1,45 +1,37 @@
-package br.com.neoron.entity;
+package br.com.neoron.dto;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import br.com.neoron.entity.Aeroportos;
 
-@Entity
-public class Voos {
+public class VooResponseDTO {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID codigoVoo;
-
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "origem_id")
 	private Aeroportos origem;
-
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "destino_id")
 	private Aeroportos destino;
 
+	@JsonFormat(pattern = "dd/MM/yyyy")
 	private LocalDate dataPartida;
-	private LocalDate dataChegada;
-	private LocalDateTime horaPartida;
-	private LocalDateTime horaChegada;
 
-	public Voos() {
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	private LocalDate dataChegada;
+
+	@JsonFormat(pattern = "HH:mm")
+	private LocalTime horaPartida;
+
+	@JsonFormat(pattern = "HH:mm")
+	private LocalTime horaChegada;
+
+	public VooResponseDTO() {
 
 	}
 
-	public Voos(UUID codigoVoo, Aeroportos origem, Aeroportos destino, LocalDate dataPartida, LocalDate dataChegada,
-			LocalDateTime horaPartida, LocalDateTime horaChegada) {
+	public VooResponseDTO(UUID codigoVoo, Aeroportos origem, Aeroportos destino, LocalDate dataPartida, LocalDate dataChegada,
+			LocalTime horaPartida, LocalTime horaChegada) {
 		super();
 		this.codigoVoo = codigoVoo;
 		this.origem = origem;
@@ -90,20 +82,19 @@ public class Voos {
 		this.dataChegada = dataChegada;
 	}
 
-	public LocalDateTime getHoraPartida() {
+	public LocalTime getHoraPartida() {
 		return horaPartida;
 	}
 
-	public void setHoraPartida(LocalDateTime horaPartida) {
+	public void setHoraPartida(LocalTime horaPartida) {
 		this.horaPartida = horaPartida;
 	}
 
-	public LocalDateTime getHoraChegada() {
+	public LocalTime getHoraChegada() {
 		return horaChegada;
 	}
 
-	public void setHoraChegada(LocalDateTime horaChegada) {
+	public void setHoraChegada(LocalTime horaChegada) {
 		this.horaChegada = horaChegada;
 	}
-
 }
