@@ -10,6 +10,8 @@ import br.com.neoron.entity.Aeroportos;
 
 public class VooResponseDTO {
 
+	
+	// DTO de resposta para formatação das datas
 	private UUID codigoVoo;
 	private Aeroportos origem;
 	private Aeroportos destino;

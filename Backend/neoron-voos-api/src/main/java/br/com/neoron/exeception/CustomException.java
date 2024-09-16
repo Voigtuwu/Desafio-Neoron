@@ -10,6 +10,7 @@ public class CustomException  extends RuntimeException {
 	 */
 	private static final long serialVersionUID = 2915436441182707465L;
 
+	// Construtor para enviar a mensagem personalizada
 	public CustomException(String message) {
 		super(message);
 	}
