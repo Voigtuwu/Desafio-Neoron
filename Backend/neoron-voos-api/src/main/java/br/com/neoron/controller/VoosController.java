@@ -18,51 +18,70 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.neoron.dto.VooResponseDTO;
 import br.com.neoron.entity.Voos;
 import br.com.neoron.service.VooService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestController
 @RequestMapping("/api/voos")
 public class VoosController {
 
-	@Autowired
-	private VooService voosService;
+    @Autowired
+    private VooService voosService;
 
-	// Método para cadstrar voo
-	@PostMapping
-	public ResponseEntity<VooResponseDTO> criarVoo(@RequestBody Voos v) {
-		VooResponseDTO vooCriado = voosService.criarVoo(v);
-		return new ResponseEntity<>(vooCriado, HttpStatus.CREATED);
-	}
+    @Operation(summary = "Cria um novo voo")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Voo criado com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Requisição inválida")
+    })
+    @PostMapping
+    public ResponseEntity<VooResponseDTO> criarVoo(@RequestBody Voos v) {
+        VooResponseDTO vooCriado = voosService.criarVoo(v);
+        return new ResponseEntity<>(vooCriado, HttpStatus.CREATED);
+    }
 
-	// Método para atualizar voo
-	@PutMapping("/{id}")
-	public ResponseEntity<VooResponseDTO> atualizarVoo(@PathVariable UUID id, @RequestBody Voos v) {
-		VooResponseDTO vooAtualizado = voosService.atualizarVoo(id, v);
-		return new ResponseEntity<>(vooAtualizado, HttpStatus.OK);
-	}
+    @Operation(summary = "Atualiza um voo existente")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Voo atualizado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Voo não encontrado")
+    })
+    @PutMapping("/{id}")
+    public ResponseEntity<VooResponseDTO> atualizarVoo(@PathVariable UUID id, @RequestBody Voos v) {
+        VooResponseDTO vooAtualizado = voosService.atualizarVoo(id, v);
+        return new ResponseEntity<>(vooAtualizado, HttpStatus.OK);
+    }
 
-	// Método para listar todos os voos
-	@GetMapping
-	public ResponseEntity<List<VooResponseDTO>> listarTodos() {
-		List<VooResponseDTO> voos = voosService.listarTodos();
-		return new ResponseEntity<>(voos, HttpStatus.OK);
-	}
+    @Operation(summary = "Obtém todos os voos")
+    @ApiResponse(responseCode = "200", description = "Lista de voos retornada com sucesso")
+    @GetMapping
+    public ResponseEntity<List<VooResponseDTO>> listarTodos() {
+        List<VooResponseDTO> voos = voosService.listarTodos();
+        return new ResponseEntity<>(voos, HttpStatus.OK);
+    }
 
-	// Método para listar por id
-	@GetMapping("/{id}")
-	public ResponseEntity<VooResponseDTO> listarPorId(@PathVariable UUID id) {
-		VooResponseDTO voo = voosService.listarPorId(id);
-		return new ResponseEntity<>(voo, HttpStatus.OK);
-	}
+    @Operation(summary = "Obtém um voo pelo ID")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Voo encontrado"),
+        @ApiResponse(responseCode = "404", description = "Voo não encontrado")
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity<VooResponseDTO> listarPorId(@PathVariable UUID id) {
+        VooResponseDTO voo = voosService.listarPorId(id);
+        return new ResponseEntity<>(voo, HttpStatus.OK);
+    }
 
-	// Método para deletar
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deletarVoo(@PathVariable UUID id) {
-		try {
-			voosService.deletarVoo(id);
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		} catch (Exception e) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-	}
-
+    @Operation(summary = "Deleta um voo pelo ID")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Voo deletado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Voo não encontrado")
+    })
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarVoo(@PathVariable UUID id) {
+        try {
+            voosService.deletarVoo(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }
